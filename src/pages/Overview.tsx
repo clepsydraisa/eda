@@ -138,7 +138,7 @@ export function Overview() {
   if (error) {
     return (
       <section className="page-blank">
-        <h2 className="page-title">Overview</h2>
+        <h2 className="page-title">Dados</h2>
         <p className="muted">{error}</p>
         <details>
           <summary>Como criar a view pública table_columns</summary>
@@ -166,15 +166,16 @@ order by c.table_name, c.ordinal_position;
   if (!rows || rows.length === 0) {
     return (
       <section className="page-blank">
-        <h2 className="page-title">Overview</h2>
+        <h2 className="page-title">Dados</h2>
         <p className="muted">Sem colunas para mostrar. Confirma a view `table_columns`.</p>
       </section>
     );
   }
 
   return (
+    <>
     <section className="page-blank">
-      <h2 className="page-title">Overview</h2>
+      <h2 className="page-title">Dados</h2>
 
       <div
         style={{
@@ -187,10 +188,10 @@ order by c.table_name, c.ordinal_position;
         }}
       >
         {[
-          { key: 'nitrato_tejo_loc_zvt', label: 'Nitrato', img: '/img/tables/nitrato_tab.png' },
-          { key: 'condut_tejo_loc_zvt', label: 'Condutividade', img: '/img/tables/condut_tab.png' },
-          { key: 'piezo_tejo_loc_zvt', label: 'Piezo', img: '/img/tables/piezo_tab.png' },
-          { key: 'caudal_tejo_loc', label: 'Caudal', img: '/img/tables/caudal_tab.png' },
+          { key: 'nitrato_tejo_loc_zvt', label: 'Nitrato', img: '/img/tables/nitrato_tab.png', dl: 'https://drive.google.com/file/d/1EVTWLQ4q3jDanTof6-CvXaf72uQ-goYf/view?usp=sharing' },
+          { key: 'condut_tejo_loc_zvt', label: 'Condutividade', img: '/img/tables/condut_tab.png', dl: 'https://drive.google.com/file/d/1-pnaH5dMB7fAUCVxNFGAd1oxXTZVBZ9f/view?usp=sharing' },
+          { key: 'piezo_tejo_loc_zvt', label: 'Piezo', img: '/img/tables/piezo_tab.png', dl: 'https://drive.google.com/file/d/1AZDCfhkT6qPaBm8_weEeBQ5_EiCxjUI4/view?usp=sharing' },
+          { key: 'caudal_tejo_loc', label: 'Caudal', img: '/img/tables/caudal_tab.png', dl: 'https://drive.google.com/file/d/13BIhNb6W23NvX-H33xxZVb6lTWnAWa_Y/view?usp=sharing' },
         ].map((card) => (
           <button
             key={card.key}
@@ -201,7 +202,7 @@ order by c.table_name, c.ordinal_position;
             }}
             className={selected === card.key ? 'nav-item active' : 'nav-item'}
           >
-            <div style={{display:'grid', gap:6}}>
+            <div style={{display:'grid', gap:6, position:'relative', paddingBottom:24}}>
               <img
                 src={card.img}
                 alt={card.label}
@@ -216,6 +217,26 @@ order by c.table_name, c.ordinal_position;
                 }}
               />
               <div style={{textAlign:'center'}}>{card.label}</div>
+
+              <a
+                href={card.dl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title="Transferir CSV"
+                style={{
+                  position:'absolute', right:6, bottom:6,
+                  display:'inline-flex', alignItems:'center', justifyContent:'center',
+                  width:26, height:26, borderRadius:6,
+                  background:'rgba(2,6,23,0.35)', border:'1px solid var(--border)',
+                  color:'inherit'
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 3a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4.001 4.001a1 1 0 0 1-1.414 0l-4.001-4.001a1 1 0 1 1 1.414-1.414L11 13.586V4a1 1 0 0 1 1-1z"/>
+                  <path d="M5 19a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z"/>
+                </svg>
+              </a>
             </div>
           </button>
         ))}
@@ -278,6 +299,248 @@ order by c.table_name, c.ordinal_position;
         </div>
       )}
     </section>
+
+    <section className="page-blank" style={{ marginTop: 24 }}>
+      <h2 className="page-title">Mapa</h2>
+      <MapSection />
+    </section>
+    </>
+  );
+}
+
+// Map section with filters per table
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import { utmToLatLng, VARIABLE_CFG, type VariableKey, fetchDistinctSistemas, fetchVariableData } from '../lib/edaData';
+
+type TableKey = 'nitrato_tejo_loc_zvt' | 'condut_tejo_loc_zvt' | 'piezo_tejo_loc_zvt' | 'caudal_tejo_loc';
+
+const VARIABLE_UI: Record<VariableKey, { label: string; color: string }> = {
+  profundidade: { label: 'Profundidade', color: '#0ea5e9' },
+  nitrato: { label: 'Nitrato', color: '#ef4444' },
+  condutividade: { label: 'Condutividade', color: '#22c55e' },
+  caudal: { label: 'Caudal', color: '#38bdf8' },
+};
+
+function colorIcon(hex: string) {
+  // Pequeno ponto colorido
+  return L.divIcon({
+    className: 'dot-marker',
+    html: `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${hex};border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,0.35);"></span>`,
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+  });
+}
+
+function friendlySistemaLabel(raw: string): string {
+  const s = raw.trim().toLowerCase();
+  if (s.includes('aluv')) return 'Aluviões';
+  if (s.includes('margem direita') || s.includes('direita')) return 'Margem Direita';
+  if (s.includes('margem esquerda') || s.includes('esquerda')) return 'Margem Esquerda';
+  return raw;
+}
+
+function parseDate(ds: string): Date {
+  // suporta 'YYYY-MM-DD' e 'DD/MM/YYYY'
+  if (/^\d{4}-\d{2}-\d{2}/.test(ds)) return new Date(ds);
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(ds)) {
+    const [d, m, y] = ds.split('/').map((v) => parseInt(v, 10));
+    return new Date(y, m - 1, d);
+  }
+  const t = Date.parse(ds);
+  return isNaN(t) ? new Date(0) : new Date(t);
+}
+
+function formatDate(ds: string): string {
+  const d = parseDate(ds);
+  if (!d || isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('pt-PT');
+}
+
+type AnyRow = {
+  id?: number | string;
+  coord_x_m?: number | null;
+  coord_y_m?: number | null;
+  codigo?: string | null;
+  localizacao?: string | null;
+  data?: string | null;
+  sistema_aquifero?: string | null;
+};
+
+function MapSection() {
+  const [selectedVariable, setSelectedVariable] = useState<VariableKey>('profundidade');
+  const [selectedSistema, setSelectedSistema] = useState<string>('todos');
+  const [selectedCodigo, setSelectedCodigo] = useState<string>('');
+  const [sistemaOptions, setSistemaOptions] = useState<string[]>([]);
+  const [rows, setRows] = useState<AnyRow[]>([]);
+  const [statsByCode, setStatsByCode] = useState<Record<string, { min?: string | null; max?: string | null; count: number }>>({});
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [map, setMap] = useState<L.Map | null>(null);
+
+  const uniqueCodes = useMemo(() => {
+    const field = VARIABLE_CFG[selectedVariable].codeField;
+    const set = new Set<string>();
+    rows.forEach((r) => {
+      const code = field === 'localizacao' ? r.localizacao : r.codigo;
+      if (code) set.add(String(code));
+    });
+    return Array.from(set).sort((a,b) => a.localeCompare(b, 'pt'));
+  }, [rows, selectedVariable]);
+
+  useEffect(() => {
+    let cancel = false;
+    async function run() {
+      setLoading(true);
+      setErr(null);
+      try {
+        const cfg = VARIABLE_CFG[selectedVariable];
+        // Buscar todos os registos (sem limite) e agregar por código
+        const { data } = await fetchVariableData(selectedVariable, selectedSistema);
+        if (cancel) return;
+        const codeField = cfg.codeField;
+        const byCode = new Map<string, AnyRow>();
+        const stats: Record<string, { min?: string | null; max?: string | null; count: number }> = {};
+        (data as AnyRow[]).forEach((r) => {
+          const code = (codeField === 'localizacao' ? r.localizacao : r.codigo) as string | undefined;
+          if (!code) return;
+          if (typeof r.coord_x_m !== 'number' || typeof r.coord_y_m !== 'number') return;
+          if (!byCode.has(code)) byCode.set(code, r);
+          // stats
+          const ds = (r.data ?? undefined) as string | undefined;
+          if (!stats[code]) stats[code] = { min: ds ?? null, max: ds ?? null, count: 0 };
+          stats[code].count += 1;
+          if (ds) {
+            const a = parseDate(ds);
+            const minA = stats[code].min ? parseDate(stats[code].min) : undefined;
+            const maxA = stats[code].max ? parseDate(stats[code].max) : undefined;
+            if (!minA || a < minA) stats[code].min = ds;
+            if (!maxA || a > maxA) stats[code].max = ds;
+          }
+        });
+        setRows(Array.from(byCode.values()));
+        setStatsByCode(stats);
+
+        // carregar opções de sistema aquífero
+        if (cfg.codeField === 'localizacao') {
+          setSistemaOptions([]);
+        } else {
+          const distinct = await fetchDistinctSistemas(selectedVariable);
+          const vals = Array.from(new Set((distinct || []).map((v) => String(v).trim()))).sort((a,b)=>a.localeCompare(b,'pt'));
+          if (selectedVariable === 'profundidade') {
+            // eslint-disable-next-line no-console
+            console.log('[Profundidade] DISTINCT sistema_aquifero (raw):', vals);
+          }
+          setSistemaOptions(vals);
+        }
+      } catch (e: any) {
+        if (!cancel) setErr(e?.message ?? 'Erro ao carregar pontos');
+      } finally {
+        if (!cancel) setLoading(false);
+      }
+    }
+    run();
+    return () => { cancel = true; };
+  }, [selectedVariable, selectedSistema]);
+
+  const centerLisboa: [number, number] = [38.7223, -9.1393];
+
+  return (
+    <div>
+      <div style={{display:'flex', gap:12, flexWrap:'wrap', marginBottom:10, alignItems:'center'}}>
+        <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+          <span>Variável:</span>
+          <select value={selectedVariable} onChange={(e) => { setSelectedVariable(e.target.value as VariableKey); setSelectedCodigo(''); }}>
+            {(['profundidade','nitrato','condutividade','caudal'] as VariableKey[]).map((k) => (
+              <option key={k} value={k}>{VARIABLE_UI[k].label}</option>
+            ))}
+          </select>
+        </label>
+        <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+          <span>Sistema Aquífero:</span>
+          <select value={selectedSistema} onChange={(e) => { setSelectedSistema(e.target.value); setSelectedCodigo(''); }} disabled={VARIABLE_CFG[selectedVariable].codeField==='localizacao'}>
+            <option value="todos">Todos</option>
+            {sistemaOptions.map((s) => (<option key={s} value={s}>{s}</option>))}
+          </select>
+        </label>
+        <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+          <span>Pontos ({uniqueCodes.length}):</span>
+          <select
+            value={selectedCodigo}
+            onChange={(e) => {
+            const code = e.target.value; setSelectedCodigo(code);
+            if (!code || !map) return;
+            const cfg = VARIABLE_CFG[selectedVariable];
+            const row = rows.find((r) => {
+              const codeVal = cfg.codeField === 'localizacao' ? r.localizacao : r.codigo;
+              if (!codeVal) return false;
+              // Dependência direta do sistema aquífero
+              if (selectedSistema !== 'todos' && r.sistema_aquifero && VARIABLE_CFG[selectedVariable].codeField !== 'localizacao') {
+                return codeVal === code && r.sistema_aquifero === selectedSistema;
+              }
+              return codeVal === code;
+            });
+            if (!row) return;
+            const latlng = utmToLatLng(row.coord_x_m as number, row.coord_y_m as number);
+            if (latlng) map.setView(latlng, 14);
+          }}>
+            <option value="">Todos</option>
+            {uniqueCodes
+              .filter((code) => {
+                if (VARIABLE_CFG[selectedVariable].codeField === 'localizacao') return true;
+                if (selectedSistema === 'todos') return true;
+                // incluir apenas códigos que existam no sistema selecionado
+                return rows.some((r) => r.codigo === code && r.sistema_aquifero === selectedSistema);
+              })
+              .map((code) => (
+              <option key={code} value={code}>{code}</option>
+            ))}
+          </select>
+        </label>
+        {loading && <span className="muted">A carregar…</span>}
+        {err && <span className="muted">{err}</span>}
+      </div>
+
+      <MapContainer center={centerLisboa} zoom={9} whenCreated={(m) => setMap(m)} style={{height:420, width:'100%', borderRadius:12, overflow:'hidden'}}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        {rows
+          .filter((r) => {
+            if (VARIABLE_CFG[selectedVariable].codeField === 'localizacao') return true;
+            if (selectedSistema === 'todos') return true;
+            return (r.sistema_aquifero === selectedSistema);
+          })
+          .map((r, idx) => {
+          const latlng = utmToLatLng(r.coord_x_m as number, r.coord_y_m as number);
+          if (!latlng) return null;
+          const cfg = VARIABLE_CFG[selectedVariable];
+          const ui = VARIABLE_UI[selectedVariable];
+          const code = cfg.codeField === 'localizacao' ? r.localizacao : r.codigo;
+          if (selectedCodigo && String(code) !== selectedCodigo) return null;
+          const st = statsByCode[String(code)];
+          return (
+            <Marker key={`row-${idx}`} position={latlng} icon={colorIcon(ui.color)}>
+              <Popup>
+                <div style={{display:'grid', gap:4}}>
+                  <div><strong>{ui.label}</strong></div>
+                  {code && <div>codigo: {code}</div>}
+                  {st && (
+                    <>
+                      <div>data início: {st.min ? formatDate(st.min) : '—'}</div>
+                      <div>data final: {st.max ? formatDate(st.max) : '—'}</div>
+                      <div>amostras: {st.count}</div>
+                    </>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
   );
 }
 

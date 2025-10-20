@@ -11,8 +11,8 @@ const NAV_ITEMS = [
 export function AppLayout() {
   return (
     <div className="app">
-      <header className="navbar">
-        <div className="brand">EDA</div>
+      <header className="navbar glass">
+        <div className="brand">CLEPSYDRA - EDA</div>
         <nav className="nav">
           {NAV_ITEMS.map((item) => (
             <NavLink
