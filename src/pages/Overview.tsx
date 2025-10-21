@@ -188,10 +188,10 @@ order by c.table_name, c.ordinal_position;
         }}
       >
         {[
-          { key: 'nitrato_tejo_loc_zvt', label: 'Nitrato', img: '/img/tables/nitrato_tab.png', dl: 'https://drive.google.com/file/d/1EVTWLQ4q3jDanTof6-CvXaf72uQ-goYf/view?usp=sharing' },
-          { key: 'condut_tejo_loc_zvt', label: 'Condutividade', img: '/img/tables/condut_tab.png', dl: 'https://drive.google.com/file/d/1-pnaH5dMB7fAUCVxNFGAd1oxXTZVBZ9f/view?usp=sharing' },
-          { key: 'piezo_tejo_loc_zvt', label: 'Piezo', img: '/img/tables/piezo_tab.png', dl: 'https://drive.google.com/file/d/1AZDCfhkT6qPaBm8_weEeBQ5_EiCxjUI4/view?usp=sharing' },
-          { key: 'caudal_tejo_loc', label: 'Caudal', img: '/img/tables/caudal_tab.png', dl: 'https://drive.google.com/file/d/13BIhNb6W23NvX-H33xxZVb6lTWnAWa_Y/view?usp=sharing' },
+          { key: 'nitrato_tejo_loc_zvt', label: 'Nitrato', img: `${import.meta.env.BASE_URL || '/'}img/tables/nitrato_tab.png`, dl: 'https://drive.google.com/file/d/1EVTWLQ4q3jDanTof6-CvXaf72uQ-goYf/view?usp=sharing' },
+          { key: 'condut_tejo_loc_zvt', label: 'Condutividade', img: `${import.meta.env.BASE_URL || '/'}img/tables/condut_tab.png`, dl: 'https://drive.google.com/file/d/1-pnaH5dMB7fAUCVxNFGAd1oxXTZVBZ9f/view?usp=sharing' },
+          { key: 'piezo_tejo_loc_zvt', label: 'Piezo', img: `${import.meta.env.BASE_URL || '/'}img/tables/piezo_tab.png`, dl: 'https://drive.google.com/file/d/1AZDCfhkT6qPaBm8_weEeBQ5_EiCxjUI4/view?usp=sharing' },
+          { key: 'caudal_tejo_loc', label: 'Caudal', img: `${import.meta.env.BASE_URL || '/'}img/tables/caudal_tab.png`, dl: 'https://drive.google.com/file/d/13BIhNb6W23NvX-H33xxZVb6lTWnAWa_Y/view?usp=sharing' },
         ].map((card) => (
           <button
             key={card.key}
@@ -310,7 +310,7 @@ order by c.table_name, c.ordinal_position;
 
 // Map section with filters per table
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import { utmToLatLng, VARIABLE_CFG, type VariableKey, fetchDistinctSistemas, fetchVariableData } from '../lib/edaData';
 
@@ -324,12 +324,22 @@ const VARIABLE_UI: Record<VariableKey, { label: string; color: string }> = {
 };
 
 function colorIcon(hex: string) {
-  // Pequeno ponto colorido
-  return L.divIcon({
-    className: 'dot-marker',
-    html: `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${hex};border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,0.35);"></span>`,
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
+  // Pequeno pin SVG com cor sólida
+  const svg = encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' width='20' height='28' viewBox='0 0 20 28'>
+      <defs>
+        <filter id='shadow' x='-20%' y='-20%' width='140%' height='140%'>
+          <feDropShadow dx='0' dy='2' stdDeviation='1.5' flood-color='rgba(0,0,0,0.35)'/>
+        </filter>
+      </defs>
+      <path filter='url(#shadow)' fill='${hex}' d='M10 0c-4.4 0-8 3.5-8 8 0 5.5 8 18 8 18s8-12.5 8-18c0-4.5-3.6-8-8-8z'/>
+      <circle cx='10' cy='8' r='3.3' fill='white'/>
+    </svg>`);
+  return L.icon({
+    iconUrl: `data:image/svg+xml;charset=UTF-8,${svg}`,
+    iconSize: [20, 28],
+    iconAnchor: [10, 28],
+    popupAnchor: [0, -26],
   });
 }
 
@@ -378,6 +388,14 @@ function MapSection() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [map, setMap] = useState<L.Map | null>(null);
+  const [showZVT, setShowZVT] = useState<boolean>(false);
+  const [zvtData, setZvtData] = useState<any>(null);
+  const [showMD, setShowMD] = useState<boolean>(false);
+  const [showME, setShowME] = useState<boolean>(false);
+  const [showAL, setShowAL] = useState<boolean>(false);
+  const [mdData, setMdData] = useState<any>(null);
+  const [meData, setMeData] = useState<any>(null);
+  const [alData, setAlData] = useState<any>(null);
 
   const uniqueCodes = useMemo(() => {
     const field = VARIABLE_CFG[selectedVariable].codeField;
@@ -444,6 +462,35 @@ function MapSection() {
     return () => { cancel = true; };
   }, [selectedVariable, selectedSistema]);
 
+  useEffect(() => {
+    let cancel = false;
+    if (showZVT && !zvtData) {
+      fetch('/data/zona_vulneravel.geojson')
+        .then((r) => r.json())
+        .then((gj) => { if (!cancel) setZvtData(gj); })
+        .catch(() => {});
+    }
+    if (showMD && !mdData) {
+      fetch('/data/margem_direita.geojson')
+        .then((r) => r.json())
+        .then((gj) => { if (!cancel) setMdData(gj); })
+        .catch(() => {});
+    }
+    if (showME && !meData) {
+      fetch('/data/margem_esquerda.geojson')
+        .then((r) => r.json())
+        .then((gj) => { if (!cancel) setMeData(gj); })
+        .catch(() => {});
+    }
+    if (showAL && !alData) {
+      fetch('/data/aluviao.geojson')
+        .then((r) => r.json())
+        .then((gj) => { if (!cancel) setAlData(gj); })
+        .catch(() => {});
+    }
+    return () => { cancel = true; };
+  }, [showZVT, zvtData, showMD, mdData, showME, meData, showAL, alData]);
+
   const centerLisboa: [number, number] = [38.7223, -9.1393];
 
   return (
@@ -498,48 +545,78 @@ function MapSection() {
             ))}
           </select>
         </label>
+        {/* camadas movidas para caixa dentro do mapa */}
         {loading && <span className="muted">A carregar…</span>}
         {err && <span className="muted">{err}</span>}
       </div>
 
-      <MapContainer center={centerLisboa} zoom={9} whenCreated={(m) => setMap(m)} style={{height:420, width:'100%', borderRadius:12, overflow:'hidden'}}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
-        {rows
-          .filter((r) => {
-            if (VARIABLE_CFG[selectedVariable].codeField === 'localizacao') return true;
-            if (selectedSistema === 'todos') return true;
-            return (r.sistema_aquifero === selectedSistema);
-          })
-          .map((r, idx) => {
-          const latlng = utmToLatLng(r.coord_x_m as number, r.coord_y_m as number);
-          if (!latlng) return null;
-          const cfg = VARIABLE_CFG[selectedVariable];
-          const ui = VARIABLE_UI[selectedVariable];
-          const code = cfg.codeField === 'localizacao' ? r.localizacao : r.codigo;
-          if (selectedCodigo && String(code) !== selectedCodigo) return null;
-          const st = statsByCode[String(code)];
-          return (
-            <Marker key={`row-${idx}`} position={latlng} icon={colorIcon(ui.color)}>
-              <Popup>
-                <div style={{display:'grid', gap:4}}>
-                  <div><strong>{ui.label}</strong></div>
-                  {code && <div>codigo: {code}</div>}
-                  {st && (
-                    <>
-                      <div>data início: {st.min ? formatDate(st.min) : '—'}</div>
-                      <div>data final: {st.max ? formatDate(st.max) : '—'}</div>
-                      <div>amostras: {st.count}</div>
-                    </>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+      <div style={{position:'relative'}}>
+        <MapContainer center={centerLisboa} zoom={9} whenCreated={(m) => setMap(m)} style={{height:420, width:'100%', borderRadius:12, overflow:'hidden'}}>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap contributors"
+          />
+          {rows
+            .filter((r) => {
+              if (VARIABLE_CFG[selectedVariable].codeField === 'localizacao') return true;
+              if (selectedSistema === 'todos') return true;
+              return (r.sistema_aquifero === selectedSistema);
+            })
+            .map((r, idx) => {
+            const latlng = utmToLatLng(r.coord_x_m as number, r.coord_y_m as number);
+            if (!latlng) return null;
+            const cfg = VARIABLE_CFG[selectedVariable];
+            const ui = VARIABLE_UI[selectedVariable];
+            const code = cfg.codeField === 'localizacao' ? r.localizacao : r.codigo;
+            if (selectedCodigo && String(code) !== selectedCodigo) return null;
+            const st = statsByCode[String(code)];
+            return (
+              <Marker key={`row-${idx}`} position={latlng} icon={colorIcon(ui.color)}>
+                <Popup>
+                  <div style={{display:'grid', gap:4}}>
+                    <div><strong>{ui.label}</strong></div>
+                    {code && <div>codigo: {code}</div>}
+                    {st && (
+                      <>
+                        <div>data início: {st.min ? formatDate(st.min) : '—'}</div>
+                        <div>data final: {st.max ? formatDate(st.max) : '—'}</div>
+                        <div>amostras: {st.count}</div>
+                      </>
+                    )}
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+          {showZVT && zvtData && (
+            <GeoJSON data={zvtData as any} style={() => ({ color: '#ef4444', weight: 1, fillColor: '#ef4444', fillOpacity: 0.12 })} />
+          )}
+          {showMD && mdData && (
+            <GeoJSON data={mdData as any} style={() => ({ color: '#1d4ed8', weight: 1.2, fillColor: '#1d4ed8', fillOpacity: 0.75 })} />
+          )}
+          {showME && meData && (
+            <GeoJSON data={meData as any} style={() => ({ color: '#059669', weight: 1.2, fillColor: '#059669', fillOpacity: 0.75 })} />
+          )}
+          {showAL && alData && (
+            <GeoJSON data={alData as any} style={() => ({ color: '#a16207', weight: 1.2, fillColor: '#a16207', fillOpacity: 0.75 })} />
+          )}
+        </MapContainer>
+        <div style={{position:'absolute', top:10, right:10, background:'rgba(15,23,42,0.9)', border:'1px solid var(--border)', borderRadius:8, padding:'8px 10px', color:'var(--text)', fontSize:12, display:'grid', gap:6, zIndex:1000, pointerEvents:'auto'}}>
+          <div style={{opacity:0.9, marginBottom:2}}>Camadas</div>
+          <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+            <input type="checkbox" checked={showZVT} onChange={(e)=>setShowZVT(e.target.checked)} /> ZVT
+          </label>
+          <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+            <input type="checkbox" checked={showMD} onChange={(e)=>setShowMD(e.target.checked)} /> MD
+          </label>
+          <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+            <input type="checkbox" checked={showME} onChange={(e)=>setShowME(e.target.checked)} /> ME
+          </label>
+          <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
+            <input type="checkbox" checked={showAL} onChange={(e)=>setShowAL(e.target.checked)} /> AL
+          </label>
+        </div>
+      </div>
     </div>
   );
 }
