@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { fetchAll } from '../lib/edaData';
 
 type ColumnRow = {
   table_name: string;
@@ -12,6 +13,7 @@ export function Overview() {
   const [rows, setRows] = useState<ColumnRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [codeSortDir, setCodeSortDir] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     let cancelled = false;
@@ -51,9 +53,7 @@ export function Overview() {
 
   type TableStats = {
     rowCount?: number;
-    codigoDistinct?: Array<string | number>;
-    dataMin?: string | null;
-    dataMax?: string | null;
+    codeInfo?: Array<{ code: string; min: string | null; max: string | null; count: number }>;
     loading?: boolean;
     error?: string | null;
   };
@@ -67,51 +67,49 @@ export function Overview() {
     if (stats[table]?.loading) return;
     setStats((s) => ({ ...s, [table]: { ...s[table], loading: true, error: null } }));
     try {
-      const hasCodigo = columns.some((c) => c.column_name === 'codigo');
       const hasData = columns.some((c) => c.column_name === 'data');
+      const codeField = table === 'caudal_tejo_loc' ? 'localizacao' : 'codigo';
 
-      const [{ count, error: countErr }, codigoRes, dataMinRes, dataMaxRes] = await Promise.all([
-        supabase.from(table).select('*', { head: true, count: 'exact' }),
-        hasCodigo
-          ? supabase
-              .from(table)
-              .select('codigo')
-              .not('codigo', 'is', null)
-              .order('codigo', { ascending: true })
-              .limit(1000)
-          : Promise.resolve({ data: null, error: null } as any),
-        hasData
-          ? supabase.from(table).select('data').order('data', { ascending: true }).limit(1)
-          : Promise.resolve({ data: null, error: null } as any),
-        hasData
-          ? supabase.from(table).select('data').order('data', { ascending: false }).limit(1)
-          : Promise.resolve({ data: null, error: null } as any),
-      ]);
-
+      // total de linhas com head+count
+      const { count, error: countErr } = await supabase.from(table).select('*', { head: true, count: 'exact' });
       if (countErr) throw countErr;
 
-      const distinctCodigo = Array.isArray(codigoRes?.data)
-        ? Array.from(new Set(
-            (codigoRes.data as Array<{ codigo: string | number | null }> )
-              .map((d) => d.codigo)
-              .filter((v): v is string | number => v !== null)
-          )).slice(0, 50)
-        : undefined;
-
-      const dataMin = Array.isArray(dataMinRes?.data) && dataMinRes.data.length > 0
-        ? (dataMinRes.data[0] as any).data ?? null
-        : null;
-      const dataMax = Array.isArray(dataMaxRes?.data) && dataMaxRes.data.length > 0
-        ? (dataMaxRes.data[0] as any).data ?? null
-        : null;
+      // obter todas as linhas com codigo+data e agregar por codigo
+      const selectCols = table === 'caudal_tejo_loc' ? `${codeField}, data` : `${codeField}, data, sistema_aquifero`;
+      const build = () => supabase.from(table).select(selectCols).not(codeField, 'is', null);
+      const all = await fetchAll<any>(build);
+      const map: Record<string, { sa?: string | null; min: string | null; max: string | null; count: number }> = {};
+      const abbrSA = (raw?: string | null): string | null => {
+        if (!raw) return null;
+        const s = String(raw).toLowerCase();
+        if (s.includes('aluv')) return 'AL';
+        if (s.includes('margem direita') || s.includes(' direita') || s.includes(' dir')) return 'MD';
+        if (s.includes('margem esquerda') || s.includes(' esquerda') || s.includes(' esq')) return 'ME';
+        return raw;
+      };
+      all.forEach((r) => {
+        const code = r[codeField] as string | null;
+        const d = r['data'] as string | null;
+        if (!code) return;
+        if (!map[code]) map[code] = { sa: abbrSA(r['sistema_aquifero'] as string | null), min: d, max: d, count: 0 };
+        map[code].count += 1;
+        if (d) {
+          const t = Date.parse(d);
+          const tmin = map[code].min ? Date.parse(map[code].min as string) : undefined;
+          const tmax = map[code].max ? Date.parse(map[code].max as string) : undefined;
+          if (!tmin || t < (tmin as number)) map[code].min = d;
+          if (!tmax || t > (tmax as number)) map[code].max = d;
+        }
+      });
+      const codeInfo = Object.entries(map)
+        .map(([code, info]) => ({ code, ...info }))
+        .sort((a, b) => String(a.code).localeCompare(String(b.code), 'pt'));
 
       setStats((s) => ({
         ...s,
         [table]: {
           rowCount: typeof count === 'number' ? count : undefined,
-          codigoDistinct: distinctCodigo,
-          dataMin,
-          dataMax,
+          codeInfo,
           loading: false,
           error: null,
         },
@@ -277,18 +275,42 @@ order by c.table_name, c.ordinal_position;
                   {typeof stats[selected].rowCount === 'number' && (
                     <div><strong>Total de linhas:</strong> {stats[selected].rowCount}</div>
                   )}
-                  {(stats[selected].dataMin || stats[selected].dataMax) && (
-                    <div>
-                      <strong>Período (data):</strong> {stats[selected].dataMin ?? '—'} → {stats[selected].dataMax ?? '—'}
-                    </div>
-                  )}
-                  {Array.isArray(stats[selected].codigoDistinct) && (
-                    <div>
-                      <strong>Distinct de codigo</strong> (primeiros {stats[selected].codigoDistinct.length}):
-                      <div style={{display:'flex', flexWrap:'wrap', gap:6, marginTop:6}}>
-                        {stats[selected].codigoDistinct.map((v) => (
-                          <span key={String(v)} style={{border:'1px solid var(--border)', borderRadius:8, padding:'2px 8px'}}>{String(v)}</span>
-                        ))}
+                  {Array.isArray(stats[selected].codeInfo) && stats[selected].codeInfo.length > 0 && (
+                    <div style={{marginTop:8}}>
+                      <strong>Por ponto ({stats[selected].codeInfo.length}):</strong>
+                      <div style={{maxHeight:240, overflow:'auto', marginTop:6, border:'1px solid var(--border)', borderRadius:8}}>
+                        <table style={{width:'100%', borderCollapse:'collapse', fontSize:12}}>
+                          <thead>
+                            <tr>
+                              <th style={{textAlign:'left', padding:'6px 8px', borderBottom:'1px solid var(--border)'}}>Código</th>
+                              <th style={{textAlign:'left', padding:'6px 8px', borderBottom:'1px solid var(--border)'}}>SA</th>
+                              <th style={{textAlign:'left', padding:'6px 8px', borderBottom:'1px solid var(--border)'}}>Início</th>
+                              <th style={{textAlign:'left', padding:'6px 8px', borderBottom:'1px solid var(--border)'}}>Final</th>
+                              <th style={{textAlign:'left', padding:'6px 8px', borderBottom:'1px solid var(--border)'}}>
+                                <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
+                                  n
+                                  <span style={{display:'inline-flex', gap:4}}>
+                                    <button title="Ordenar crescente" onClick={() => setCodeSortDir('asc')} style={{border:'1px solid var(--border)', background:'transparent', cursor:'pointer', lineHeight:1, padding:'0 4px', borderRadius:4}}>▲</button>
+                                    <button title="Ordenar decrescente" onClick={() => setCodeSortDir('desc')} style={{border:'1px solid var(--border)', background:'transparent', cursor:'pointer', lineHeight:1, padding:'0 4px', borderRadius:4}}>▼</button>
+                                  </span>
+                                </span>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {([...stats[selected].codeInfo]
+                              .sort((a,b) => codeSortDir === 'asc' ? a.count - b.count : b.count - a.count))
+                              .map((ci) => (
+                              <tr key={ci.code}>
+                                <td style={{padding:'6px 8px', borderTop:'1px solid var(--border)'}}>{ci.code}</td>
+                                <td style={{padding:'6px 8px', borderTop:'1px solid var(--border)'}}>{ci.sa ?? '—'}</td>
+                                <td style={{padding:'6px 8px', borderTop:'1px solid var(--border)'}}>{ci.min ? formatDate(ci.min) : '—'}</td>
+                                <td style={{padding:'6px 8px', borderTop:'1px solid var(--border)'}}>{ci.max ? formatDate(ci.max) : '—'}</td>
+                                <td style={{padding:'6px 8px', borderTop:'1px solid var(--border)'}}>{ci.count}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   )}
