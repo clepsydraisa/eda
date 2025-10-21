@@ -573,7 +573,7 @@ function MapSection() {
             return (
               <Marker key={`row-${idx}`} position={latlng} icon={colorIcon(ui.color)}>
                 <Popup>
-                  <div style={{display:'grid', gap:4}}>
+                  <div style={{display:'grid', gap:4, position:'relative', paddingBottom:22}}>
                     <div><strong>{ui.label}</strong></div>
                     {code && <div>codigo: {code}</div>}
                     {st && (
@@ -583,6 +583,21 @@ function MapSection() {
                         <div>amostras: {st.count}</div>
                       </>
                     )}
+                    <button
+                      title="Visualizar"
+                      style={{
+                        position:'absolute', right:6, bottom:4,
+                        display:'inline-flex', alignItems:'center', justifyContent:'center',
+                        width:26, height:26, borderRadius:6,
+                        background:'rgba(0,0,0,0.05)', border:'1px solid rgba(0,0,0,0.15)',
+                        color:'inherit', cursor:'pointer'
+                      }}
+                      onClick={(e)=>{ e.preventDefault(); e.stopPropagation(); }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 5c-5.523 0-9.5 7-9.5 7s3.977 7 9.5 7 9.5-7 9.5-7-3.977-7-9.5-7zm0 11.2a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4zm0-2.7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                      </svg>
+                    </button>
                   </div>
                 </Popup>
               </Marker>
