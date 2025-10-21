@@ -464,30 +464,39 @@ function MapSection() {
 
   useEffect(() => {
     let cancel = false;
-    if (showZVT && !zvtData) {
-      fetch('/data/zona_vulneravel.geojson')
-        .then((r) => r.json())
-        .then((gj) => { if (!cancel) setZvtData(gj); })
-        .catch(() => {});
-    }
-    if (showMD && !mdData) {
-      fetch('/data/margem_direita.geojson')
-        .then((r) => r.json())
-        .then((gj) => { if (!cancel) setMdData(gj); })
-        .catch(() => {});
-    }
-    if (showME && !meData) {
-      fetch('/data/margem_esquerda.geojson')
-        .then((r) => r.json())
-        .then((gj) => { if (!cancel) setMeData(gj); })
-        .catch(() => {});
-    }
-    if (showAL && !alData) {
-      fetch('/data/aluviao.geojson')
-        .then((r) => r.json())
-        .then((gj) => { if (!cancel) setAlData(gj); })
-        .catch(() => {});
-    }
+    const base = (import.meta.env.BASE_URL || '/');
+    const urlFor = (name: string) => `${base}data/${name}`;
+    const rawFor = (name: string) => `https://raw.githubusercontent.com/clepsydraisa/eda/refs/heads/main/public/data/${name}`;
+    const fetchWithFallback = async (name: string) => {
+      try {
+        const res = await fetch(urlFor(name));
+        if (res.ok) return res.json();
+      } catch {}
+      try {
+        const res2 = await fetch(rawFor(name));
+        if (res2.ok) return res2.json();
+      } catch {}
+      return null;
+    };
+
+    (async () => {
+      if (showZVT && !zvtData) {
+        const gj = await fetchWithFallback('zona_vulneravel.geojson');
+        if (!cancel && gj) setZvtData(gj);
+      }
+      if (showMD && !mdData) {
+        const gj = await fetchWithFallback('margem_direita.geojson');
+        if (!cancel && gj) setMdData(gj);
+      }
+      if (showME && !meData) {
+        const gj = await fetchWithFallback('margem_esquerda.geojson');
+        if (!cancel && gj) setMeData(gj);
+      }
+      if (showAL && !alData) {
+        const gj = await fetchWithFallback('aluviao.geojson');
+        if (!cancel && gj) setAlData(gj);
+      }
+    })();
     return () => { cancel = true; };
   }, [showZVT, zvtData, showMD, mdData, showME, meData, showAL, alData]);
 
