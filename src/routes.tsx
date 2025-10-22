@@ -4,6 +4,7 @@ import { PageBlank } from './ui/PageBlank';
 import { Overview } from './pages/Overview';
 import { AnaliseLayout } from './pages/Analise/Layout';
 import { AnaliseEstatisticas } from './pages/Analise/Estatisticas';
+import { AnaliseInfo } from './pages/Analise/Info';
 import { AnaliseMapa } from './pages/Analise/Mapa';
 import { Navigate } from 'react-router-dom';
 
@@ -18,7 +19,8 @@ export const routes: RouteObject[] = [
         path: 'analise',
         element: <AnaliseLayout />,
         children: [
-          { index: true, element: <Navigate to="estatisticas" replace /> },
+          { index: true, element: <Navigate to="info" replace /> },
+          { path: 'info', element: <AnaliseInfo /> },
           { path: 'estatisticas', element: <AnaliseEstatisticas /> },
           { path: 'mapa', element: <AnaliseMapa /> },
         ],
