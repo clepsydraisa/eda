@@ -2,7 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Overview' },
-  { to: '/dados', label: 'Dados' },
+  // removido: aba Dados
   { to: '/analise', label: 'Análise' },
   { to: '/modelos', label: 'Modelos' },
   { to: '/config', label: 'Config' },

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { cacheRead, cacheWrite, cacheClear } from '../lib/cache';
 
 
 type ColumnRow = {
@@ -64,6 +65,10 @@ export function Overview() {
   const [stats, setStats] = useState<Record<string, TableStats>>({});
   const [selected, setSelected] = useState<string | null>(null);
 
+  const isDev = import.meta.env.DEV;
+  function timeStart(label: string) { if (isDev) console.time(label); }
+  function timeEnd(label: string) { if (isDev) console.timeEnd(label); }
+
   async function loadStats(table: string, columns: ColumnRow[]) {
     if (!supabase) return;
     // Avoid refetching while loading
@@ -74,7 +79,7 @@ export function Overview() {
       const codeField = table === 'caudal_tejo_loc' ? 'localizacao' : 'codigo';
 
       // total de linhas com head+count
-      const { count, error: countErr } = await supabase.from(table).select('*', { head: true, count: 'exact' });
+      const { count, error: countErr } = await supabase.from(table).select('*', { head: true, count: 'estimated' });
       if (countErr) throw countErr;
 
       // obter todas as linhas com codigo+data e agregar por codigo
@@ -111,6 +116,7 @@ export function Overview() {
           .sort((a, b) => String(a.code).localeCompare(String(b.code), 'pt'));
       } else {
         // estatísticas específicas meteo: global min/max (time) e pontos distintos (lat/long)
+        timeStart(`[stats] meteo base`);
         const { data } = await supabase.from('meteo').select('time, lat, long');
         const arr = (data || []) as Array<{ time: string | null; lat: number | null; long: number | null }>;
         let gmin: string | null = null;
@@ -137,6 +143,7 @@ export function Overview() {
             error: null,
           },
         }));
+        timeEnd(`[stats] meteo base`);
         return;
       }
 
@@ -279,6 +286,10 @@ order by c.table_name, c.ordinal_position;
         ))}
       </div>
 
+      <div style={{display:'flex', justifyContent:'flex-end', marginTop:8}}>
+        <button onClick={() => { cacheClear(); setSelected(null); }} style={{border:'1px solid var(--border)', background:'transparent', color:'inherit', borderRadius:8, padding:'6px 10px', cursor:'pointer'}}>Atualizar dados</button>
+      </div>
+
       {selected && byTable[selected] && (
         <div style={{marginTop:16}}>
           <h3 style={{marginTop:0}}>{selected}</h3>
@@ -393,25 +404,7 @@ const VARIABLE_UI: Record<VariableKey, { label: string; color: string }> = {
   meteo: { label: 'Meteo', color: '#f59e0b' },
 };
 
-// Cache util simples (localStorage) com TTL
-const CACHE_PREFIX = 'eda_cache:';
-function cacheRead<T>(key: string, maxAgeMs: number): T | null {
-  try {
-    const raw = localStorage.getItem(CACHE_PREFIX + key);
-    if (!raw) return null;
-    const obj = JSON.parse(raw) as { t: number; d: T };
-    if (!obj || typeof obj.t !== 'number') return null;
-    if (Date.now() - obj.t > maxAgeMs) return null;
-    return obj.d;
-  } catch {
-    return null;
-  }
-}
-function cacheWrite<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(CACHE_PREFIX + key, JSON.stringify({ t: Date.now(), d: data }));
-  } catch {}
-}
+// cacheRead/cacheWrite/cacheClear agora vêm de '../lib/cache'
 
 function colorIcon(hex: string) {
   // Pequeno pin SVG com cor sólida

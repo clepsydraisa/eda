@@ -53,7 +53,7 @@ export async function fetchVariableData(variable: VariableKey, sistemaAquifero: 
     ? 'id, data, coord_x_m, coord_y_m, localizacao'
     : 'id, data, coord_x_m, coord_y_m, codigo, sistema_aquifero';
   const build = () => {
-    let q = supabase.from(cfg.table).select(select);
+    let q = supabase.from(cfg.table).select(select, { count: 'none' });
     if (sistemaAquifero && sistemaAquifero !== 'todos' && cfg.codeField !== 'localizacao') {
       q = q.eq('sistema_aquifero', sistemaAquifero);
     }
@@ -68,7 +68,7 @@ export async function fetchDistinctSistemas(variable: VariableKey) {
   const cfg = VARIABLE_CFG[variable];
   const build = () => supabase
     .from(cfg.table)
-    .select('sistema_aquifero')
+    .select('sistema_aquifero', { count: 'none' })
     .not('sistema_aquifero', 'is', null);
   const data = await fetchAll<any>(build);
   const uniq = Array.from(new Set((data || []).map((r: any) => r.sistema_aquifero))).filter(Boolean) as string[];

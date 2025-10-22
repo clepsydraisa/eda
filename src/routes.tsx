@@ -9,7 +9,7 @@ export const routes: RouteObject[] = [
     element: <AppLayout />,
     children: [
       { index: true, element: <Overview /> },
-      { path: 'dados', element: <PageBlank title="Dados" /> },
+      // removido: rota 'dados'
       { path: 'analise', element: <PageBlank title="Análise" /> },
       { path: 'modelos', element: <PageBlank title="Modelos" /> },
       { path: 'config', element: <PageBlank title="Config" /> },
