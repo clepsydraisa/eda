@@ -41,6 +41,8 @@ body{
 .nav-item:hover{ color:var(--text); background:#0b162f; }
 .nav-item.active{ color:#081018; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
 
+/* dropdown styles removed as header no longer has submenu */
+
 .content{ width:100%; max-width:1500px; margin: 20px auto; padding: 0 8px; flex:1; }
 .footer{ border-top:1px solid var(--border); padding: 16px 20px; color:var(--muted); background:rgba(15,23,42,0.75); }
 
