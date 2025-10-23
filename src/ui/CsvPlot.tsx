@@ -271,7 +271,9 @@ function TimeSeriesPlot({ data, series, normalize, normStats }:
   { data: Array<{ t: Date; values: Record<string, number> }>; series: SeriesConfig[]; normalize: boolean; normStats: Record<string, { mu: number; sd: number }> }) {
   const elRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (!elRef.current || !(window as any).Plotly) return;
+    const node = elRef.current;
+    const P = (window as any).Plotly;
+    if (!node || !P) return;
     const traces = series.map((s) => {
       const x: string[] = [];
       const y: number[] = [];
@@ -310,10 +312,10 @@ function TimeSeriesPlot({ data, series, normalize, normStats }:
       responsive: true,
       modeBarButtonsToRemove: [],
     };
-    (window as any).Plotly.newPlot(elRef.current, traces as any, layout, config);
-    const ro = new ResizeObserver(() => { Plotly.Plots.resize(elRef.current as any); });
-    ro.observe(elRef.current);
-    return () => { ro.disconnect(); Plotly.purge(elRef.current as any); };
+    P.newPlot(node, traces as any, layout, config);
+    const ro = new ResizeObserver(() => { if (node) P.Plots.resize(node as any); });
+    ro.observe(node);
+    return () => { ro.disconnect(); if (node) P.purge(node as any); };
   }, [data, series, normalize, normStats]);
   return <div ref={elRef} />;
 }
