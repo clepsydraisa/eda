@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_354625fbcc0a75d7baa4c6d68483a1c4 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="position: fixed; bottom: 24px; left: 24px; z-index: 9999; background: white; padding: 8px 10px; border: 1px solid #999; border-radius: 4px; font-size: 13px;">
+      <div style="font-weight: 600; margin-bottom: 4px;">R2_adj (thresholds)</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:red;margin-right:6px;border:1px solid #666;"></span>< 0.40</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:yellow;margin-right:6px;border:1px solid #666;"></span>0.40 – 0.60</div>
+      <div><span style="display:inline-block;width:12px;height:12px;background:green;margin-right:6px;border:1px solid #666;"></span>≥ 0.60</div>
+    </div>
+    
+    
+            <div class="folium-map" id="map_354625fbcc0a75d7baa4c6d68483a1c4" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_354625fbcc0a75d7baa4c6d68483a1c4 = L.map(
+                "map_354625fbcc0a75d7baa4c6d68483a1c4",
+                {
+                    center: [39.087445250485565, -8.713070284908802],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_fb054b310942678fb20e9896f7173966 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_fb054b310942678fb20e9896f7173966.addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+            var circle_marker_f90aa066cf11f5a8e6d5304946a810c7 = L.circleMarker(
+                [38.83265702070208, -8.91322764738625],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_497c502fd1a4cfb82d2210e1d9881cc8 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_8afff77d66064950cbf366afe75e9fcd = $(`<div id="html_8afff77d66064950cbf366afe75e9fcd" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 418/15<br><b>n_obs:</b> 221<br><b>R2_adj:</b> 0.464<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_497c502fd1a4cfb82d2210e1d9881cc8.setContent(html_8afff77d66064950cbf366afe75e9fcd);
+            
+        
+
+        circle_marker_f90aa066cf11f5a8e6d5304946a810c7.bindPopup(popup_497c502fd1a4cfb82d2210e1d9881cc8)
+        ;
+
+        
+    
+    
+            var circle_marker_36e873e659961965b7f335b264a954a2 = L.circleMarker(
+                [39.00226813788561, -8.747933204359521],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_7d1326b1ef87d0b7b3bdeb281e900654 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_ed3586ce37d04efd9c7c4f082299c2cb = $(`<div id="html_ed3586ce37d04efd9c7c4f082299c2cb" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 391/33<br><b>n_obs:</b> 219<br><b>R2_adj:</b> 0.358<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_7d1326b1ef87d0b7b3bdeb281e900654.setContent(html_ed3586ce37d04efd9c7c4f082299c2cb);
+            
+        
+
+        circle_marker_36e873e659961965b7f335b264a954a2.bindPopup(popup_7d1326b1ef87d0b7b3bdeb281e900654)
+        ;
+
+        
+    
+    
+            var circle_marker_2602124f1b7b69b42b0fb76488a70982 = L.circleMarker(
+                [39.074721547571784, -8.729391145758276],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_ea1aaed6f7341236525bd493c2136caa = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_dbb72a34c62ce41d6ba4228f21d7b915 = $(`<div id="html_dbb72a34c62ce41d6ba4228f21d7b915" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 377/94<br><b>n_obs:</b> 217<br><b>R2_adj:</b> 0.124<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_ea1aaed6f7341236525bd493c2136caa.setContent(html_dbb72a34c62ce41d6ba4228f21d7b915);
+            
+        
+
+        circle_marker_2602124f1b7b69b42b0fb76488a70982.bindPopup(popup_ea1aaed6f7341236525bd493c2136caa)
+        ;
+
+        
+    
+    
+            var circle_marker_f5d8936b699615e8230ed6dce03f9cde = L.circleMarker(
+                [39.40575877141178, -8.470033181712429],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_16ca221d5e32f7932c12f3d668c59824 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_a5ef7db87bdd2d79900a95a1fae0231b = $(`<div id="html_a5ef7db87bdd2d79900a95a1fae0231b" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 330/183<br><b>n_obs:</b> 211<br><b>R2_adj:</b> 0.083<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_16ca221d5e32f7932c12f3d668c59824.setContent(html_a5ef7db87bdd2d79900a95a1fae0231b);
+            
+        
+
+        circle_marker_f5d8936b699615e8230ed6dce03f9cde.bindPopup(popup_16ca221d5e32f7932c12f3d668c59824)
+        ;
+
+        
+    
+    
+            var circle_marker_a3312805f0b0eeae82900f514c4cc5d6 = L.circleMarker(
+                [38.940885172460284, -8.864356154052757],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_9d570b8a4c695887cf29131c93ac2626 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_1dfc988f1e9deb13e3edb02f0873b0cd = $(`<div id="html_1dfc988f1e9deb13e3edb02f0873b0cd" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 405/17<br><b>n_obs:</b> 207<br><b>R2_adj:</b> 0.600<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_9d570b8a4c695887cf29131c93ac2626.setContent(html_1dfc988f1e9deb13e3edb02f0873b0cd);
+            
+        
+
+        circle_marker_a3312805f0b0eeae82900f514c4cc5d6.bindPopup(popup_9d570b8a4c695887cf29131c93ac2626)
+        ;
+
+        
+    
+    
+            var circle_marker_845a7e8e8b3bc9a174eb87f774e7211a = L.circleMarker(
+                [39.075974920185885, -8.776538255637428],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_d28cca473cc5717246d5857e67204dc3 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c4b74ac97d8fdd1e0bf463d94a101324 = $(`<div id="html_c4b74ac97d8fdd1e0bf463d94a101324" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 377/86<br><b>n_obs:</b> 193<br><b>R2_adj:</b> 0.751<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_d28cca473cc5717246d5857e67204dc3.setContent(html_c4b74ac97d8fdd1e0bf463d94a101324);
+            
+        
+
+        circle_marker_845a7e8e8b3bc9a174eb87f774e7211a.bindPopup(popup_d28cca473cc5717246d5857e67204dc3)
+        ;
+
+        
+    
+    
+            var circle_marker_48d7cd2766ea000cdc150a59ce3c007c = L.circleMarker(
+                [39.35277835821799, -8.532890066936835],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_2863bf2fd12fa50dc514b36153540339 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_08c82e823dec3953e49f907cab12b008 = $(`<div id="html_08c82e823dec3953e49f907cab12b008" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 341/17<br><b>n_obs:</b> 190<br><b>R2_adj:</b> 0.601<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_2863bf2fd12fa50dc514b36153540339.setContent(html_08c82e823dec3953e49f907cab12b008);
+            
+        
+
+        circle_marker_48d7cd2766ea000cdc150a59ce3c007c.bindPopup(popup_2863bf2fd12fa50dc514b36153540339)
+        ;
+
+        
+    
+    
+            var circle_marker_ffacaa26199d3c3c6f8a34c983a75266 = L.circleMarker(
+                [38.809989914061276, -8.880744515837215],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_0e5585f695fe3003b4d6e760f0e031dc = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d88dd40d20e8395d16ae67297c3bd617 = $(`<div id="html_d88dd40d20e8395d16ae67297c3bd617" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 418/4<br><b>n_obs:</b> 178<br><b>R2_adj:</b> 0.597<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_0e5585f695fe3003b4d6e760f0e031dc.setContent(html_d88dd40d20e8395d16ae67297c3bd617);
+            
+        
+
+        circle_marker_ffacaa26199d3c3c6f8a34c983a75266.bindPopup(popup_0e5585f695fe3003b4d6e760f0e031dc)
+        ;
+
+        
+    
+    
+            var circle_marker_9113e26786ea8795c94548ccbfe82fc8 = L.circleMarker(
+                [38.99222363063388, -8.78138803751802],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_c02be12a61e429be3caf775e9e71453b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_aec02ed08b6feaac9f73fd88e0bfdd60 = $(`<div id="html_aec02ed08b6feaac9f73fd88e0bfdd60" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 391/437<br><b>n_obs:</b> 165<br><b>R2_adj:</b> 0.698<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_c02be12a61e429be3caf775e9e71453b.setContent(html_aec02ed08b6feaac9f73fd88e0bfdd60);
+            
+        
+
+        circle_marker_9113e26786ea8795c94548ccbfe82fc8.bindPopup(popup_c02be12a61e429be3caf775e9e71453b)
+        ;
+
+        
+    
+    
+            var circle_marker_4357bc5d867d4a9bc82245964966994a = L.circleMarker(
+                [38.863026334386426, -8.88371955375627],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_f0d679fcbcedb798515c5e6fbcf7f3ee = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_0c6d7ee7a1c252164de629eefcae2cfb = $(`<div id="html_0c6d7ee7a1c252164de629eefcae2cfb" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 404/69<br><b>n_obs:</b> 136<br><b>R2_adj:</b> 0.630<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_f0d679fcbcedb798515c5e6fbcf7f3ee.setContent(html_0c6d7ee7a1c252164de629eefcae2cfb);
+            
+        
+
+        circle_marker_4357bc5d867d4a9bc82245964966994a.bindPopup(popup_f0d679fcbcedb798515c5e6fbcf7f3ee)
+        ;
+
+        
+    
+    
+            var circle_marker_4dc2f9c74c0b54b4bc28e5f36441a9ac = L.circleMarker(
+                [38.958420853785334, -8.76116714156585],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_8aa7838285ac2cac344f1ab5a3b9e458 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_6ed04e0933cd367640e0039771819b8d = $(`<div id="html_6ed04e0933cd367640e0039771819b8d" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 391/243<br><b>n_obs:</b> 102<br><b>R2_adj:</b> 0.161<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_8aa7838285ac2cac344f1ab5a3b9e458.setContent(html_6ed04e0933cd367640e0039771819b8d);
+            
+        
+
+        circle_marker_4dc2f9c74c0b54b4bc28e5f36441a9ac.bindPopup(popup_8aa7838285ac2cac344f1ab5a3b9e458)
+        ;
+
+        
+    
+    
+            var circle_marker_f44773728d71d399cfd94b74adaeabf5 = L.circleMarker(
+                [39.347355693206914, -8.482744684063292],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_6236a9f4eab2a50099266879d676680f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d8c568306314628f4b957c40a0af6ac5 = $(`<div id="html_d8c568306314628f4b957c40a0af6ac5" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 342/78<br><b>n_obs:</b> 93<br><b>R2_adj:</b> 0.222<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_6236a9f4eab2a50099266879d676680f.setContent(html_d8c568306314628f4b957c40a0af6ac5);
+            
+        
+
+        circle_marker_f44773728d71d399cfd94b74adaeabf5.bindPopup(popup_6236a9f4eab2a50099266879d676680f)
+        ;
+
+        
+    
+    
+            var circle_marker_68b461c37aa9eeccb2085b36bfa719a1 = L.circleMarker(
+                [39.479497741719065, -8.265693632680588],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_48590cfad97584b0f2c9f494fb030def = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_887f956bb82ba4257977f186ea10746d = $(`<div id="html_887f956bb82ba4257977f186ea10746d" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 331/2<br><b>n_obs:</b> 80<br><b>R2_adj:</b> 0.498<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_48590cfad97584b0f2c9f494fb030def.setContent(html_887f956bb82ba4257977f186ea10746d);
+            
+        
+
+        circle_marker_68b461c37aa9eeccb2085b36bfa719a1.bindPopup(popup_48590cfad97584b0f2c9f494fb030def)
+        ;
+
+        
+    
+    
+            var circle_marker_6f3aa1176919a3f3961e84c7ec607c69 = L.circleMarker(
+                [38.866515337266826, -8.829476761549785],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_576997bb45e00e1ee0cdfb65ec032c42 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_288d66cdfdf643cce37294e859f5c6ab = $(`<div id="html_288d66cdfdf643cce37294e859f5c6ab" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 405/34<br><b>n_obs:</b> 79<br><b>R2_adj:</b> 0.530<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_576997bb45e00e1ee0cdfb65ec032c42.setContent(html_288d66cdfdf643cce37294e859f5c6ab);
+            
+        
+
+        circle_marker_6f3aa1176919a3f3961e84c7ec607c69.bindPopup(popup_576997bb45e00e1ee0cdfb65ec032c42)
+        ;
+
+        
+    
+    
+            var circle_marker_edc8c811bd16dde35eb14ec1da33286c = L.circleMarker(
+                [39.0057362409088, -8.949371863688773],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_e78f23799be7535203988573b3a289e4 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_3f8d8ab326c230b5154ab7e133195da4 = $(`<div id="html_3f8d8ab326c230b5154ab7e133195da4" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 390/208<br><b>n_obs:</b> 75<br><b>R2_adj:</b> 0.463<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_e78f23799be7535203988573b3a289e4.setContent(html_3f8d8ab326c230b5154ab7e133195da4);
+            
+        
+
+        circle_marker_edc8c811bd16dde35eb14ec1da33286c.bindPopup(popup_e78f23799be7535203988573b3a289e4)
+        ;
+
+        
+    
+    
+            var circle_marker_b705883a36590d6ce5f5298a793016f4 = L.circleMarker(
+                [39.0978391370536, -8.74586176968888],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_aa961462533ab2f8f2d7dabed459929f = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_90a48a029d3e81dc25e79860de9e858b = $(`<div id="html_90a48a029d3e81dc25e79860de9e858b" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 377/54<br><b>n_obs:</b> 74<br><b>R2_adj:</b> 0.733<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_aa961462533ab2f8f2d7dabed459929f.setContent(html_90a48a029d3e81dc25e79860de9e858b);
+            
+        
+
+        circle_marker_b705883a36590d6ce5f5298a793016f4.bindPopup(popup_aa961462533ab2f8f2d7dabed459929f)
+        ;
+
+        
+    
+    
+            var circle_marker_f66d0cac88992261e1a6384b799e767e = L.circleMarker(
+                [39.366553617966304, -8.478431140589214],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_cfe840faa7a914caee2bb88bc9c81305 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_dc3d97815364717b7c26cbbcec2a41e6 = $(`<div id="html_dc3d97815364717b7c26cbbcec2a41e6" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 342/97<br><b>n_obs:</b> 57<br><b>R2_adj:</b> 0.722<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_cfe840faa7a914caee2bb88bc9c81305.setContent(html_dc3d97815364717b7c26cbbcec2a41e6);
+            
+        
+
+        circle_marker_f66d0cac88992261e1a6384b799e767e.bindPopup(popup_cfe840faa7a914caee2bb88bc9c81305)
+        ;
+
+        
+    
+    
+            var circle_marker_8b19eb9954af1eb93270240ddb8ec71f = L.circleMarker(
+                [39.10181207931643, -8.74229637157708],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+        
+    
+        var popup_c10761dae345303e1a11597c30417c4e = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_a9e1fc4bf43149a93fbca1d1e985c5a1 = $(`<div id="html_a9e1fc4bf43149a93fbca1d1e985c5a1" style="width: 100.0%; height: 100.0%;"><b>poço:</b> 377/84<br><b>n_obs:</b> 48<br><b>R2_adj:</b> 0.834<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_c10761dae345303e1a11597c30417c4e.setContent(html_a9e1fc4bf43149a93fbca1d1e985c5a1);
+            
+        
+
+        circle_marker_8b19eb9954af1eb93270240ddb8ec71f.bindPopup(popup_c10761dae345303e1a11597c30417c4e)
+        ;
+
+        
+    
+</script>
+</html>
