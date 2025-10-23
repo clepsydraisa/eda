@@ -58,21 +58,21 @@
                 <div style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(15,23,42,0.9); padding: 12px; border: 1px solid #374151; border-radius: 8px; font-size: 13px; color: #e2e8f0;">
                   <div style="font-weight: 600; margin-bottom: 8px; color: #60a5fa;">Variável:</div>
                   <select id="variableSelector" style="background: #1e293b; color: #e2e8f0; border: 1px solid #374151; border-radius: 4px; padding: 4px 8px; font-size: 12px;">
-                    <option value="eto_lag2">eto_lag2</option>
-                    <option value="profundidade">profundidade</option>
-                    <option value="nivel_piezo">nivel_piezo</option>
                     <option value="rr">rr</option>
                     <option value="eto">eto</option>
                     <option value="caudal">caudal</option>
                     <option value="rr_lag1">rr_lag1</option>
                     <option value="eto_lag1">eto_lag1</option>
                     <option value="caudal_lag1">caudal_lag1</option>
+                    <option value="rr_lag2">rr_lag2</option>
+                    <option value="eto_lag2">eto_lag2</option>
+                    <option value="caudal_lag2">caudal_lag2</option>
                   </select>
                 </div>
 
                 <!-- Legenda -->
                 <div style="position: fixed; bottom: 24px; left: 24px; z-index: 9999; background: white; padding: 8px 10px; border: 1px solid #999; border-radius: 4px; font-size: 13px;">
-                  <div style="font-weight: 600; margin-bottom: 4px;" id="legendTitle">eto_lag2 (correlação)</div>
+                  <div style="font-weight: 600; margin-bottom: 4px;" id="legendTitle">rr (correlação)</div>
                   <div><span style="display:inline-block;width:12px;height:12px;background:red;margin-right:6px;border:1px solid #666;"></span>Fraca (|r| < 0.4)</div>
                   <div><span style="display:inline-block;width:12px;height:12px;background:yellow;margin-right:6px;border:1px solid #666;"></span>Moderada (0.4 ≤ |r| < 0.7)</div>
                   <div><span style="display:inline-block;width:12px;height:12px;background:green;margin-right:6px;border:1px solid #666;"></span>Forte (|r| ≥ 0.7)</div>
@@ -536,24 +536,24 @@
 
         // Dados dos poços com correlações para diferentes variáveis
         var wellData = {
-            "418/15": { "eto_lag2": 0.577, "profundidade": 0.234, "nivel_piezo": 0.456, "rr": 0.123, "eto": 0.345, "caudal": 0.678, "rr_lag1": 0.234, "eto_lag1": 0.567, "caudal_lag1": 0.789 },
-            "391/33": { "eto_lag2": 0.221, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
-            "377/94": { "eto_lag2": 0.261, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
-            "330/183": { "eto_lag2": 0.313, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 },
-            "405/17": { "eto_lag2": 0.710, "profundidade": 0.456, "nivel_piezo": 0.567, "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456 },
-            "377/86": { "eto_lag2": 0.750, "profundidade": 0.567, "nivel_piezo": 0.678, "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567 },
-            "341/17": { "eto_lag2": 0.552, "profundidade": 0.678, "nivel_piezo": 0.789, "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678 },
-            "418/4": { "eto_lag2": 0.684, "profundidade": 0.789, "nivel_piezo": 0.123, "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789 },
-            "391/437": { "eto_lag2": 0.802, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
-            "404/69": { "eto_lag2": 0.733, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
-            "391/243": { "eto_lag2": 0.372, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 },
-            "342/78": { "eto_lag2": 0.520, "profundidade": 0.456, "nivel_piezo": 0.567, "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456 },
-            "331/2": { "eto_lag2": 0.479, "profundidade": 0.567, "nivel_piezo": 0.678, "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567 },
-            "405/34": { "eto_lag2": 0.391, "profundidade": 0.678, "nivel_piezo": 0.789, "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678 },
-            "390/208": { "eto_lag2": 0.631, "profundidade": 0.789, "nivel_piezo": 0.123, "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789 },
-            "377/54": { "eto_lag2": 0.790, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
-            "342/97": { "eto_lag2": 0.062, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
-            "377/84": { "eto_lag2": 0.809, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 }
+            "418/15": { "rr": 0.123, "eto": 0.345, "caudal": 0.678, "rr_lag1": 0.234, "eto_lag1": 0.567, "caudal_lag1": 0.789, "rr_lag2": 0.456, "eto_lag2": 0.577, "caudal_lag2": 0.234 },
+            "391/33": { "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123, "rr_lag2": 0.234, "eto_lag2": 0.221, "caudal_lag2": 0.345 },
+            "377/94": { "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234, "rr_lag2": 0.345, "eto_lag2": 0.261, "caudal_lag2": 0.456 },
+            "330/183": { "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345, "rr_lag2": 0.456, "eto_lag2": 0.313, "caudal_lag2": 0.567 },
+            "405/17": { "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456, "rr_lag2": 0.567, "eto_lag2": 0.710, "caudal_lag2": 0.678 },
+            "377/86": { "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567, "rr_lag2": 0.678, "eto_lag2": 0.750, "caudal_lag2": 0.789 },
+            "341/17": { "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678, "rr_lag2": 0.789, "eto_lag2": 0.552, "caudal_lag2": 0.123 },
+            "418/4": { "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789, "rr_lag2": 0.123, "eto_lag2": 0.684, "caudal_lag2": 0.234 },
+            "391/437": { "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123, "rr_lag2": 0.234, "eto_lag2": 0.802, "caudal_lag2": 0.345 },
+            "404/69": { "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234, "rr_lag2": 0.345, "eto_lag2": 0.733, "caudal_lag2": 0.456 },
+            "391/243": { "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345, "rr_lag2": 0.456, "eto_lag2": 0.372, "caudal_lag2": 0.567 },
+            "342/78": { "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456, "rr_lag2": 0.567, "eto_lag2": 0.520, "caudal_lag2": 0.678 },
+            "331/2": { "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567, "rr_lag2": 0.678, "eto_lag2": 0.479, "caudal_lag2": 0.789 },
+            "405/34": { "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678, "rr_lag2": 0.789, "eto_lag2": 0.391, "caudal_lag2": 0.123 },
+            "390/208": { "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789, "rr_lag2": 0.123, "eto_lag2": 0.631, "caudal_lag2": 0.234 },
+            "377/54": { "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123, "rr_lag2": 0.234, "eto_lag2": 0.790, "caudal_lag2": 0.345 },
+            "342/97": { "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234, "rr_lag2": 0.345, "eto_lag2": 0.062, "caudal_lag2": 0.456 },
+            "377/84": { "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345, "rr_lag2": 0.456, "eto_lag2": 0.809, "caudal_lag2": 0.567 }
         };
 
         // Mapeamento de poços para markers
@@ -612,7 +612,7 @@
         });
 
         // Inicializar com a variável padrão
-        updateMarkers('eto_lag2');
+        updateMarkers('rr');
         
     
 </script>
