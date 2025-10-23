@@ -104,6 +104,24 @@
         
     
             tile_layer_fb054b310942678fb20e9896f7173966.addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+
+            // Overlays (ZVT/MD/ME/AL) carregados de public/data/*.geojson
+            (function(){
+              try {
+                var base = (location.pathname.split('/correlacoes/')[0] || '').replace(/\/$/, '');
+                function url(p){ return base + p; }
+                function addLayer(name, style){
+                  var layer = L.geoJSON(null, { style: function(){ return style; } });
+                  fetch(url('/data/'+name)).then(function(r){ if(!r.ok) throw new Error('fetch'); return r.json(); }).then(function(g){ layer.addData(g); });
+                  return layer;
+                }
+                var layerZVT = addLayer('zona_vulneravel.geojson', { color:'#ef4444', weight:1, fillColor:'#ef4444', fillOpacity:0.12 });
+                var layerMD  = addLayer('margem_direita.geojson',  { color:'#1d4ed8', weight:1.2, fillColor:'#1d4ed8', fillOpacity:0.75 });
+                var layerME  = addLayer('margem_esquerda.geojson',{ color:'#059669', weight:1.2, fillColor:'#059669', fillOpacity:0.75 });
+                var layerAL  = addLayer('aluviao.geojson',         { color:'#a16207', weight:1.2, fillColor:'#a16207', fillOpacity:0.75 });
+                L.control.layers({}, { 'ZVT':layerZVT, 'MD':layerMD, 'ME':layerME, 'AL':layerAL }, { collapsed:false, position:'topright' }).addTo(map_354625fbcc0a75d7baa4c6d68483a1c4);
+              } catch(e) {}
+            })();
         
     
             var circle_marker_f90aa066cf11f5a8e6d5304946a810c7 = L.circleMarker(
