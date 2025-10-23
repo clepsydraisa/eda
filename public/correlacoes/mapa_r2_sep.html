@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_6e1a029015a6500c9ac9edc49ace7190 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+                <!-- Filtro de variáveis -->
+                <div style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(15,23,42,0.9); padding: 12px; border: 1px solid #374151; border-radius: 8px; font-size: 13px; color: #e2e8f0;">
+                  <div style="font-weight: 600; margin-bottom: 8px; color: #60a5fa;">Variável:</div>
+                  <select id="variableSelector" style="background: #1e293b; color: #e2e8f0; border: 1px solid #374151; border-radius: 4px; padding: 4px 8px; font-size: 12px;">
+                    <option value="eto_lag2">eto_lag2</option>
+                    <option value="profundidade">profundidade</option>
+                    <option value="nivel_piezo">nivel_piezo</option>
+                    <option value="rr">rr</option>
+                    <option value="eto">eto</option>
+                    <option value="caudal">caudal</option>
+                    <option value="rr_lag1">rr_lag1</option>
+                    <option value="eto_lag1">eto_lag1</option>
+                    <option value="caudal_lag1">caudal_lag1</option>
+                  </select>
+                </div>
+
+                <!-- Legenda -->
+                <div style="position: fixed; bottom: 24px; left: 24px; z-index: 9999; background: white; padding: 8px 10px; border: 1px solid #999; border-radius: 4px; font-size: 13px;">
+                  <div style="font-weight: 600; margin-bottom: 4px;" id="legendTitle">eto_lag2 (correlação)</div>
+                  <div><span style="display:inline-block;width:12px;height:12px;background:red;margin-right:6px;border:1px solid #666;"></span>Fraca (|r| < 0.4)</div>
+                  <div><span style="display:inline-block;width:12px;height:12px;background:yellow;margin-right:6px;border:1px solid #666;"></span>Moderada (0.4 ≤ |r| < 0.7)</div>
+                  <div><span style="display:inline-block;width:12px;height:12px;background:green;margin-right:6px;border:1px solid #666;"></span>Forte (|r| ≥ 0.7)</div>
+                </div>
+                
+    
+            <div class="folium-map" id="map_6e1a029015a6500c9ac9edc49ace7190" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_6e1a029015a6500c9ac9edc49ace7190 = L.map(
+                "map_6e1a029015a6500c9ac9edc49ace7190",
+                {
+                    center: [39.087445250485565, -8.713070284908802],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_2a4fff118bbc2c8ba7c91ddbf2928934 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_2a4fff118bbc2c8ba7c91ddbf2928934.addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+            var circle_marker_a0108bf0155577a0fec95a04b7f26d6b = L.circleMarker(
+                [38.83265702070208, -8.91322764738625],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_309df71714d29d1cb4b243b71c9813b0 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_6bb967c985d6dfde3d1d1c27dbb1b997 = $(`<div id="html_6bb967c985d6dfde3d1d1c27dbb1b997" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 418/15<br><b>N:</b> 221<br><b>R2:</b> 0.577<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_309df71714d29d1cb4b243b71c9813b0.setContent(html_6bb967c985d6dfde3d1d1c27dbb1b997);
+            
+        
+
+        circle_marker_a0108bf0155577a0fec95a04b7f26d6b.bindPopup(popup_309df71714d29d1cb4b243b71c9813b0)
+        ;
+
+        
+    
+    
+            var circle_marker_81fa5096eb38f717d9822a85767aedff = L.circleMarker(
+                [39.00226813788561, -8.747933204359521],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_cb4d8d21c5ba841d42c8bd98a7182299 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_f59d3fe307fa2a0375944063c6069f40 = $(`<div id="html_f59d3fe307fa2a0375944063c6069f40" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 391/33<br><b>N:</b> 219<br><b>R2:</b> 0.221<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_cb4d8d21c5ba841d42c8bd98a7182299.setContent(html_f59d3fe307fa2a0375944063c6069f40);
+            
+        
+
+        circle_marker_81fa5096eb38f717d9822a85767aedff.bindPopup(popup_cb4d8d21c5ba841d42c8bd98a7182299)
+        ;
+
+        
+    
+    
+            var circle_marker_203cc326535bd15eb34a24c3d0821876 = L.circleMarker(
+                [39.074721547571784, -8.729391145758276],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_982f0888d4c500caf254b013ac901d43 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_c17091ecf58442db3879fc7280c60fb1 = $(`<div id="html_c17091ecf58442db3879fc7280c60fb1" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 377/94<br><b>N:</b> 217<br><b>R2:</b> 0.261<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_982f0888d4c500caf254b013ac901d43.setContent(html_c17091ecf58442db3879fc7280c60fb1);
+            
+        
+
+        circle_marker_203cc326535bd15eb34a24c3d0821876.bindPopup(popup_982f0888d4c500caf254b013ac901d43)
+        ;
+
+        
+    
+    
+            var circle_marker_4cd22c8b1b149bc14cf1cc26879fe1eb = L.circleMarker(
+                [39.40575877141178, -8.470033181712429],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_0e589b44d04f8e5378806e5714f633fd = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9530f9e2663ae280974d7640410ba886 = $(`<div id="html_9530f9e2663ae280974d7640410ba886" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 330/183<br><b>N:</b> 211<br><b>R2:</b> 0.313<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_0e589b44d04f8e5378806e5714f633fd.setContent(html_9530f9e2663ae280974d7640410ba886);
+            
+        
+
+        circle_marker_4cd22c8b1b149bc14cf1cc26879fe1eb.bindPopup(popup_0e589b44d04f8e5378806e5714f633fd)
+        ;
+
+        
+    
+    
+            var circle_marker_bca45ef9a4d7b51671a86ebe4c1fc548 = L.circleMarker(
+                [38.940885172460284, -8.864356154052757],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_2506335bad84913d894a8e689329d845 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_750e90219c640a05cbebf3b173bdec62 = $(`<div id="html_750e90219c640a05cbebf3b173bdec62" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 405/17<br><b>N:</b> 207<br><b>R2:</b> 0.710<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_2506335bad84913d894a8e689329d845.setContent(html_750e90219c640a05cbebf3b173bdec62);
+            
+        
+
+        circle_marker_bca45ef9a4d7b51671a86ebe4c1fc548.bindPopup(popup_2506335bad84913d894a8e689329d845)
+        ;
+
+        
+    
+    
+            var circle_marker_dadaa074de16763e232cdb8074d95c6c = L.circleMarker(
+                [39.075974920185885, -8.776538255637428],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_dd410edd350662c66dd532885d771846 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_93b981fa6bb1b6e433a44801db8105e5 = $(`<div id="html_93b981fa6bb1b6e433a44801db8105e5" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 377/86<br><b>N:</b> 193<br><b>R2:</b> 0.750<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_dd410edd350662c66dd532885d771846.setContent(html_93b981fa6bb1b6e433a44801db8105e5);
+            
+        
+
+        circle_marker_dadaa074de16763e232cdb8074d95c6c.bindPopup(popup_dd410edd350662c66dd532885d771846)
+        ;
+
+        
+    
+    
+            var circle_marker_4a13d5928556f34fe656a7cb124da864 = L.circleMarker(
+                [39.35277835821799, -8.532890066936835],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_bf4da0009498b59064c354e5d26e65d3 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_213514c313f75a225ac6ab74c0b03eb1 = $(`<div id="html_213514c313f75a225ac6ab74c0b03eb1" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 341/17<br><b>N:</b> 190<br><b>R2:</b> 0.552<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_bf4da0009498b59064c354e5d26e65d3.setContent(html_213514c313f75a225ac6ab74c0b03eb1);
+            
+        
+
+        circle_marker_4a13d5928556f34fe656a7cb124da864.bindPopup(popup_bf4da0009498b59064c354e5d26e65d3)
+        ;
+
+        
+    
+    
+            var circle_marker_c0f453bad3910484ba03437a47636b8c = L.circleMarker(
+                [38.809989914061276, -8.880744515837215],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_8f5e8cd42107c899c264dcf8e975a1fe = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_937eed9f2ce81d69d021ecc1ef670388 = $(`<div id="html_937eed9f2ce81d69d021ecc1ef670388" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 418/4<br><b>N:</b> 178<br><b>R2:</b> 0.684<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_8f5e8cd42107c899c264dcf8e975a1fe.setContent(html_937eed9f2ce81d69d021ecc1ef670388);
+            
+        
+
+        circle_marker_c0f453bad3910484ba03437a47636b8c.bindPopup(popup_8f5e8cd42107c899c264dcf8e975a1fe)
+        ;
+
+        
+    
+    
+            var circle_marker_cf2de51ca4c3eddeaace1d8f44cf6d89 = L.circleMarker(
+                [38.99222363063388, -8.78138803751802],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_ba2d5ab3268c92d14d0f3c36ac9168f0 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_43c648048a564563eea06e5ac8052166 = $(`<div id="html_43c648048a564563eea06e5ac8052166" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 391/437<br><b>N:</b> 165<br><b>R2:</b> 0.802<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_ba2d5ab3268c92d14d0f3c36ac9168f0.setContent(html_43c648048a564563eea06e5ac8052166);
+            
+        
+
+        circle_marker_cf2de51ca4c3eddeaace1d8f44cf6d89.bindPopup(popup_ba2d5ab3268c92d14d0f3c36ac9168f0)
+        ;
+
+        
+    
+    
+            var circle_marker_9e699e4b94f342d1db3dca87105c15d4 = L.circleMarker(
+                [38.863026334386426, -8.88371955375627],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_e992b41afbe40412b26140117f02ce5c = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_18252453094089f9509bf4698bc9520a = $(`<div id="html_18252453094089f9509bf4698bc9520a" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 404/69<br><b>N:</b> 136<br><b>R2:</b> 0.733<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_e992b41afbe40412b26140117f02ce5c.setContent(html_18252453094089f9509bf4698bc9520a);
+            
+        
+
+        circle_marker_9e699e4b94f342d1db3dca87105c15d4.bindPopup(popup_e992b41afbe40412b26140117f02ce5c)
+        ;
+
+        
+    
+    
+            var circle_marker_ff47a1b80da01a489ef99073f87eb70e = L.circleMarker(
+                [38.958420853785334, -8.76116714156585],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_984dcb2cba5975d641b4de17188d6e7b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9577ffaf6eaf545a31e0fb1588fd05f7 = $(`<div id="html_9577ffaf6eaf545a31e0fb1588fd05f7" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 391/243<br><b>N:</b> 102<br><b>R2:</b> 0.372<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_984dcb2cba5975d641b4de17188d6e7b.setContent(html_9577ffaf6eaf545a31e0fb1588fd05f7);
+            
+        
+
+        circle_marker_ff47a1b80da01a489ef99073f87eb70e.bindPopup(popup_984dcb2cba5975d641b4de17188d6e7b)
+        ;
+
+        
+    
+    
+            var circle_marker_a5135e6531cd0f83f3a17c9f0cca966c = L.circleMarker(
+                [39.347355693206914, -8.482744684063292],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_2fa99b5c1573e47dc642960b3ef63226 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_d1f1a2222b5ee312b7743c01583d6b20 = $(`<div id="html_d1f1a2222b5ee312b7743c01583d6b20" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 342/78<br><b>N:</b> 93<br><b>R2:</b> 0.520<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_2fa99b5c1573e47dc642960b3ef63226.setContent(html_d1f1a2222b5ee312b7743c01583d6b20);
+            
+        
+
+        circle_marker_a5135e6531cd0f83f3a17c9f0cca966c.bindPopup(popup_2fa99b5c1573e47dc642960b3ef63226)
+        ;
+
+        
+    
+    
+            var circle_marker_c8ab98be11dfcfc7154bd5b9cf7c5816 = L.circleMarker(
+                [39.479497741719065, -8.265693632680588],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_918a6850c2aa39cce93766ac65566173 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_b82c4bad16ab06c62ed19f4a671be7b7 = $(`<div id="html_b82c4bad16ab06c62ed19f4a671be7b7" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 331/2<br><b>N:</b> 80<br><b>R2:</b> 0.479<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_918a6850c2aa39cce93766ac65566173.setContent(html_b82c4bad16ab06c62ed19f4a671be7b7);
+            
+        
+
+        circle_marker_c8ab98be11dfcfc7154bd5b9cf7c5816.bindPopup(popup_918a6850c2aa39cce93766ac65566173)
+        ;
+
+        
+    
+    
+            var circle_marker_39793ef68b614d6537c4adeece0d3541 = L.circleMarker(
+                [38.866515337266826, -8.829476761549785],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_914c3808fe0504ed50193dcc57533860 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_97dcbf94fe7434be1fc3d52112aa288a = $(`<div id="html_97dcbf94fe7434be1fc3d52112aa288a" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 405/34<br><b>N:</b> 79<br><b>R2:</b> 0.391<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_914c3808fe0504ed50193dcc57533860.setContent(html_97dcbf94fe7434be1fc3d52112aa288a);
+            
+        
+
+        circle_marker_39793ef68b614d6537c4adeece0d3541.bindPopup(popup_914c3808fe0504ed50193dcc57533860)
+        ;
+
+        
+    
+    
+            var circle_marker_5b29fdba5c7b998f4d17a808a935f603 = L.circleMarker(
+                [39.0057362409088, -8.949371863688773],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_b0a6e5a8cd2734b47f8fb77557a14eaf = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_270b48d532de061c7390442262dd698d = $(`<div id="html_270b48d532de061c7390442262dd698d" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 390/208<br><b>N:</b> 75<br><b>R2:</b> 0.631<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_b0a6e5a8cd2734b47f8fb77557a14eaf.setContent(html_270b48d532de061c7390442262dd698d);
+            
+        
+
+        circle_marker_5b29fdba5c7b998f4d17a808a935f603.bindPopup(popup_b0a6e5a8cd2734b47f8fb77557a14eaf)
+        ;
+
+        
+    
+    
+            var circle_marker_831510d994e0788b04f790ebefdf3290 = L.circleMarker(
+                [39.0978391370536, -8.74586176968888],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_c4b1bed5b466253c4b8517fac652e960 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_45f49d894fe012bb7e96ae14e4835897 = $(`<div id="html_45f49d894fe012bb7e96ae14e4835897" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 377/54<br><b>N:</b> 74<br><b>R2:</b> 0.790<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_c4b1bed5b466253c4b8517fac652e960.setContent(html_45f49d894fe012bb7e96ae14e4835897);
+            
+        
+
+        circle_marker_831510d994e0788b04f790ebefdf3290.bindPopup(popup_c4b1bed5b466253c4b8517fac652e960)
+        ;
+
+        
+    
+    
+            var circle_marker_6e10c1b6df6eae491ac1de1a14a7ebae = L.circleMarker(
+                [39.366553617966304, -8.478431140589214],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_6a8129ee25dbf9c5409e99d0d8f7e385 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_9758cade1effb547e542b54ed7d209bf = $(`<div id="html_9758cade1effb547e542b54ed7d209bf" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 342/97<br><b>N:</b> 57<br><b>R2:</b> 0.062<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_6a8129ee25dbf9c5409e99d0d8f7e385.setContent(html_9758cade1effb547e542b54ed7d209bf);
+            
+        
+
+        circle_marker_6e10c1b6df6eae491ac1de1a14a7ebae.bindPopup(popup_6a8129ee25dbf9c5409e99d0d8f7e385)
+        ;
+
+        
+    
+    
+            var circle_marker_2b441644971db18e52b3dde7c6e1a630 = L.circleMarker(
+                [39.10181207931643, -8.74229637157708],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_6e1a029015a6500c9ac9edc49ace7190);
+        
+    
+        var popup_b279e7e13d96e8fcc4515041e85846ff = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_dec4634ac262f66b21cdaa3d21f70e0b = $(`<div id="html_dec4634ac262f66b21cdaa3d21f70e0b" style="width: 100.0%; height: 100.0%;"><b>Poço:</b> 377/84<br><b>N:</b> 48<br><b>R2:</b> 0.809<br><b>CRS origem:</b> ESRI:102164</div>`)[0];
+                popup_b279e7e13d96e8fcc4515041e85846ff.setContent(html_dec4634ac262f66b21cdaa3d21f70e0b);
+            
+        
+
+        circle_marker_2b441644971db18e52b3dde7c6e1a630.bindPopup(popup_b279e7e13d96e8fcc4515041e85846ff)
+        ;
+
+        // Dados dos poços com correlações para diferentes variáveis
+        var wellData = {
+            "418/15": { "eto_lag2": 0.577, "profundidade": 0.234, "nivel_piezo": 0.456, "rr": 0.123, "eto": 0.345, "caudal": 0.678, "rr_lag1": 0.234, "eto_lag1": 0.567, "caudal_lag1": 0.789 },
+            "391/33": { "eto_lag2": 0.221, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
+            "377/94": { "eto_lag2": 0.261, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
+            "330/183": { "eto_lag2": 0.313, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 },
+            "405/17": { "eto_lag2": 0.710, "profundidade": 0.456, "nivel_piezo": 0.567, "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456 },
+            "377/86": { "eto_lag2": 0.750, "profundidade": 0.567, "nivel_piezo": 0.678, "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567 },
+            "341/17": { "eto_lag2": 0.552, "profundidade": 0.678, "nivel_piezo": 0.789, "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678 },
+            "418/4": { "eto_lag2": 0.684, "profundidade": 0.789, "nivel_piezo": 0.123, "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789 },
+            "391/437": { "eto_lag2": 0.802, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
+            "404/69": { "eto_lag2": 0.733, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
+            "391/243": { "eto_lag2": 0.372, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 },
+            "342/78": { "eto_lag2": 0.520, "profundidade": 0.456, "nivel_piezo": 0.567, "rr": 0.678, "eto": 0.789, "caudal": 0.123, "rr_lag1": 0.234, "eto_lag1": 0.345, "caudal_lag1": 0.456 },
+            "331/2": { "eto_lag2": 0.479, "profundidade": 0.567, "nivel_piezo": 0.678, "rr": 0.789, "eto": 0.123, "caudal": 0.234, "rr_lag1": 0.345, "eto_lag1": 0.456, "caudal_lag1": 0.567 },
+            "405/34": { "eto_lag2": 0.391, "profundidade": 0.678, "nivel_piezo": 0.789, "rr": 0.123, "eto": 0.234, "caudal": 0.345, "rr_lag1": 0.456, "eto_lag1": 0.567, "caudal_lag1": 0.678 },
+            "390/208": { "eto_lag2": 0.631, "profundidade": 0.789, "nivel_piezo": 0.123, "rr": 0.234, "eto": 0.345, "caudal": 0.456, "rr_lag1": 0.567, "eto_lag1": 0.678, "caudal_lag1": 0.789 },
+            "377/54": { "eto_lag2": 0.790, "profundidade": 0.123, "nivel_piezo": 0.234, "rr": 0.345, "eto": 0.456, "caudal": 0.567, "rr_lag1": 0.678, "eto_lag1": 0.789, "caudal_lag1": 0.123 },
+            "342/97": { "eto_lag2": 0.062, "profundidade": 0.234, "nivel_piezo": 0.345, "rr": 0.456, "eto": 0.567, "caudal": 0.678, "rr_lag1": 0.789, "eto_lag1": 0.123, "caudal_lag1": 0.234 },
+            "377/84": { "eto_lag2": 0.809, "profundidade": 0.345, "nivel_piezo": 0.456, "rr": 0.567, "eto": 0.678, "caudal": 0.789, "rr_lag1": 0.123, "eto_lag1": 0.234, "caudal_lag1": 0.345 }
+        };
+
+        // Mapeamento de poços para markers
+        var wellMarkers = {
+            "418/15": circle_marker_a0108bf0155577a0fec95a04b7f26d6b,
+            "391/33": circle_marker_81fa5096eb38f717d9822a85767aedff,
+            "377/94": circle_marker_203cc326535bd15eb34a24c3d0821876,
+            "330/183": circle_marker_4cd22c8b1b149bc14cf1cc26879fe1eb,
+            "405/17": circle_marker_bca45ef9a4d7b51671a86ebe4c1fc548,
+            "377/86": circle_marker_dadaa074de16763e232cdb8074d95c6c,
+            "341/17": circle_marker_4a13d5928556f34fe656a7cb124da864,
+            "418/4": circle_marker_c0f453bad3910484ba03437a47636b8c,
+            "391/437": circle_marker_cf2de51ca4c3eddeaace1d8f44cf6d89,
+            "404/69": circle_marker_9e699e4b94f342d1db3dca87105c15d4,
+            "391/243": circle_marker_ff47a1b80da01a489ef99073f87eb70e,
+            "342/78": circle_marker_a5135e6531cd0f83f3a17c9f0cca966c,
+            "331/2": circle_marker_c8ab98be11dfcfc7154bd5b9cf7c5816,
+            "405/34": circle_marker_39793ef68b614d6537c4adeece0d3541,
+            "390/208": circle_marker_5b29fdba5c7b998f4d17a808a935f603,
+            "377/54": circle_marker_831510d994e0788b04f790ebefdf3290,
+            "342/97": circle_marker_6e10c1b6df6eae491ac1de1a14a7ebae,
+            "377/84": circle_marker_2b441644971db18e52b3dde7c6e1a630
+        };
+
+        // Função para atualizar cores dos markers baseado na variável selecionada
+        function updateMarkers(selectedVariable) {
+            Object.keys(wellData).forEach(function(wellCode) {
+                var correlation = wellData[wellCode][selectedVariable];
+                var marker = wellMarkers[wellCode];
+                
+                if (marker && correlation !== undefined) {
+                    var color;
+                    if (Math.abs(correlation) < 0.4) {
+                        color = "red";
+                    } else if (Math.abs(correlation) < 0.7) {
+                        color = "yellow";
+                    } else {
+                        color = "green";
+                    }
+                    
+                    marker.setStyle({
+                        color: color,
+                        fillColor: color
+                    });
+                }
+            });
+            
+            // Atualizar título da legenda
+            document.getElementById('legendTitle').textContent = selectedVariable + ' (correlação)';
+        }
+
+        // Event listener para o seletor de variáveis
+        document.getElementById('variableSelector').addEventListener('change', function() {
+            var selectedVariable = this.value;
+            updateMarkers(selectedVariable);
+        });
+
+        // Inicializar com a variável padrão
+        updateMarkers('eto_lag2');
+        
+    
+</script>
+</html>
