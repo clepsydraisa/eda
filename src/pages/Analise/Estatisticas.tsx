@@ -1,3 +1,5 @@
+import { CsvPlot } from '../../ui/CsvPlot';
+
 export function AnaliseEstatisticas() {
   return (
     <section className="page-blank">
@@ -10,6 +12,14 @@ export function AnaliseEstatisticas() {
         <div style={{border:'1px solid var(--border)', borderRadius:12, padding:12}}>
           <h3 style={{marginTop:0}}>Heatmaps</h3>
           <p className="muted">Espaço reservado para heatmaps das variáveis mensais.</p>
+        </div>
+        <div style={{border:'1px solid var(--border)', borderRadius:12, padding:12}}>
+          <h3 style={{marginTop:0}}>Exploração Interativa (CSV com lags)</h3>
+          <p className="muted">Carregue um CSV local ou use o por omissão em public/data para visualizar séries temporais.</p>
+          <div style={{marginTop:8}}>
+            {/* Gráfico reativo baseado em CSV */}
+            <CsvPlot />
+          </div>
         </div>
         <div style={{border:'1px solid var(--border)', borderRadius:12, padding:12}}>
           <h3 style={{marginTop:0}}>Retas de Regressão</h3>
