@@ -78,7 +78,7 @@ const COLORS = ['#38bdf8', '#22c55e', '#ef4444', '#f59e0b', '#a78bfa', '#eab308'
 export function CsvPlot({ defaultPath = 'data/mensal_por_poco_full_valores_lags.csv' }: { defaultPath?: string }) {
   const [rows, setRows] = useState<CsvRow[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [well, setWell] = useState<string>('(Todos)');
+  const [well, setWell] = useState<string>('');
   const [selected, setSelected] = useState<string[]>([]);
   const [normalize, setNormalize] = useState<boolean>(false);
   const [xVar, setXVar] = useState<string>('');
@@ -138,6 +138,7 @@ export function CsvPlot({ defaultPath = 'data/mensal_por_poco_full_valores_lags.
   }, [rows, numericCols, ymKey]);
 
   const filtered = useMemo(() => {
+    if (!well) return [] as Array<{ t: Date; values: Record<string, number>; codigo?: string }>;
     if (well === '(Todos)') return data;
     return data.filter((r) => String(r.codigo) === String(well));
   }, [data, well]);
@@ -179,6 +180,7 @@ export function CsvPlot({ defaultPath = 'data/mensal_por_poco_full_valores_lags.
         <label style={{display:'inline-flex', alignItems:'center', gap:6}}>
           <span>Poço:</span>
           <select value={well} onChange={(e)=>setWell(e.target.value)}>
+            <option value="">(Selecione)</option>
             {wells.map((w) => (<option key={w} value={w}>{w}</option>))}
           </select>
         </label>
