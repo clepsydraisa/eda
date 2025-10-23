@@ -15,7 +15,7 @@ export function AnaliseEstatisticas() {
         </div>
         <div style={{border:'1px solid var(--border)', borderRadius:12, padding:12}}>
           <h3 style={{marginTop:0}}>Exploração Interativa (CSV com lags)</h3>
-          <p className="muted">Carregue um CSV local ou use o por omissão em public/data para visualizar séries temporais.</p>
+          <p className="muted">Escolha o poço e as variáveis para estudo</p>
           <div style={{marginTop:8}}>
             {/* Gráfico reativo baseado em CSV */}
             <CsvPlot />
